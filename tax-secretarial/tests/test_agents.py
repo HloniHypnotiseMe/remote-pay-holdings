@@ -16,21 +16,17 @@ def load_module(
     name: str,
     path: Path,
 ):
-
-    spec = (
-        importlib.util.spec_from_file_location(
-            name,
-            path,
-        )
+    spec = importlib.util.spec_from_file_location(
+        name,
+        path,
     )
 
-    module = (
-        importlib.util.module_from_spec(
-            spec
+    if spec is None or spec.loader is None:
+        raise ImportError(
+            f"Unable to create import spec for {path}"
         )
-    )
 
-    assert spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
 
     if str(ROOT) not in sys.path:
         sys.path.insert(
@@ -38,9 +34,13 @@ def load_module(
             str(ROOT),
         )
 
-    spec.loader.exec_module(
-        module
-    )
+    sys.modules[name] = module
+
+    try:
+        spec.loader.exec_module(module)
+    except Exception:
+        sys.modules.pop(name, None)
+        raise
 
     return module
 

@@ -8,7 +8,6 @@ It does not claim to submit anything to SARS.
 
 from __future__ import annotations
 
-import calendar as std_calendar
 from datetime import date, timedelta
 from typing import Iterable, Optional
 
@@ -17,6 +16,13 @@ def add_months(
     value: date,
     months: int,
 ) -> date:
+    """
+    Add calendar months without importing the calendar module.
+
+    The repository contains tax-secretarial/calendar/, which can shadow
+    Python's standard-library calendar module when tax-secretarial is
+    placed on sys.path. This implementation avoids that collision.
+    """
 
     month_index = value.month - 1 + months
 
@@ -28,12 +34,26 @@ def add_months(
         month_index % 12
     ) + 1
 
+    if month == 12:
+        next_month = date(
+            year + 1,
+            1,
+            1,
+        )
+    else:
+        next_month = date(
+            year,
+            month + 1,
+            1,
+        )
+
+    last_day = (
+        next_month - timedelta(days=1)
+    ).day
+
     day = min(
         value.day,
-        std_calendar.monthrange(
-            year,
-            month,
-        )[1],
+        last_day,
     )
 
     return date(
@@ -46,14 +66,20 @@ def add_months(
 def last_day_of_month(
     value: date,
 ) -> date:
+    """
+    Return the final calendar day of the supplied month.
+    """
 
-    return date(
-        value.year,
-        value.month,
-        std_calendar.monthrange(
-            value.year,
-            value.month,
-        )[1],
+    return (
+        add_months(
+            date(
+                value.year,
+                value.month,
+                1,
+            ),
+            1,
+        )
+        - timedelta(days=1)
     )
 
 
