@@ -430,3 +430,107 @@ if __name__ == "__main__":
     unittest.main(
         verbosity=2
     )
+
+
+class TestTaxDirectorSBCEligibility(unittest.TestCase):
+    def test_sbc_requires_actual_eligibility_facts(self):
+        result = tax_director.TaxDirector().evaluate_sbc_eligibility(
+            gross_income=1_000_000,
+            all_shareholders_natural_persons=None,
+            personal_service_company=None,
+            holding_company=None,
+        )
+
+        self.assertIsNone(result.eligible)
+        self.assertEqual(result.status, "REVIEW_REQUIRED")
+        self.assertIn("all_shareholders_natural_persons", result.missing_data)
+
+    def test_sbc_explicit_disqualifier_blocks(self):
+        result = tax_director.TaxDirector().evaluate_sbc_eligibility(
+            gross_income=1_000_000,
+            all_shareholders_natural_persons=False,
+            personal_service_company=False,
+            holding_company=False,
+        )
+
+        self.assertFalse(result.eligible)
+        self.assertEqual(result.status, "BLOCKED")
+
+    def test_sbc_ready_when_all_facts_support_eligibility(self):
+        result = tax_director.TaxDirector().evaluate_sbc_eligibility(
+            gross_income=1_000_000,
+            all_shareholders_natural_persons=True,
+            personal_service_company=False,
+            holding_company=False,
+        )
+
+        self.assertTrue(result.eligible)
+        self.assertEqual(result.status, "READY")
+
+    def test_sbc_review_does_not_calculate_tax_without_eligibility(self):
+        result = tax_director.TaxDirector().review_entity(
+            "Test Entity",
+            tax_regime="sbc",
+            taxable_income=500_000,
+            gross_income=1_000_000,
+            all_shareholders_natural_persons=None,
+            personal_service_company=None,
+            holding_company=None,
+        )
+
+        self.assertEqual(result.status, "REVIEW_REQUIRED")
+        self.assertIsNone(result.estimated_tax)
+
+
+class TestTaxDirectorSBCEligibility(unittest.TestCase):
+
+    def test_sbc_requires_actual_eligibility_facts(self):
+        result = tax_director.TaxDirector().evaluate_sbc_eligibility(
+            gross_income=1_000_000,
+            all_shareholders_natural_persons=None,
+            personal_service_company=None,
+            holding_company=None,
+        )
+
+        self.assertIsNone(result.eligible)
+        self.assertEqual(result.status, "REVIEW_REQUIRED")
+        self.assertIn(
+            "all_shareholders_natural_persons",
+            result.missing_data,
+        )
+
+    def test_sbc_explicit_disqualifier_blocks(self):
+        result = tax_director.TaxDirector().evaluate_sbc_eligibility(
+            gross_income=1_000_000,
+            all_shareholders_natural_persons=False,
+            personal_service_company=False,
+            holding_company=False,
+        )
+
+        self.assertFalse(result.eligible)
+        self.assertEqual(result.status, "BLOCKED")
+
+    def test_sbc_ready_when_all_facts_support_eligibility(self):
+        result = tax_director.TaxDirector().evaluate_sbc_eligibility(
+            gross_income=1_000_000,
+            all_shareholders_natural_persons=True,
+            personal_service_company=False,
+            holding_company=False,
+        )
+
+        self.assertTrue(result.eligible)
+        self.assertEqual(result.status, "READY")
+
+    def test_sbc_review_does_not_calculate_tax_without_eligibility(self):
+        result = tax_director.TaxDirector().review_entity(
+            "Test Entity",
+            tax_regime="sbc",
+            taxable_income=500_000,
+            gross_income=1_000_000,
+            all_shareholders_natural_persons=None,
+            personal_service_company=None,
+            holding_company=None,
+        )
+
+        self.assertEqual(result.status, "REVIEW_REQUIRED")
+        self.assertIsNone(result.estimated_tax)

@@ -175,3 +175,24 @@ def dta_screen(country: str) -> dict:
         "beneficial_owner_review_required": True,
         "entitlement_review_required": True,
     }
+
+# C6 TAX DIRECTOR — 2026/27 calculation bands
+# lower, upper, base, marginal_rate
+
+SBC_GROSS_INCOME_LIMIT = 20_000_000
+
+SBC_BANDS = [
+    (0, 99_000, 0, 0.00),
+    (99_000, 365_000, 0, 0.07),
+    (365_000, 550_000, 18_620, 0.21),
+    (550_000, None, 57_470, 0.27),
+]
+
+TURNOVER_TAX_THRESHOLD = 2_300_000
+
+TURNOVER_TAX_BANDS = [
+    (0, 600_000, 0, 0.00),
+    (600_000, 950_000, 0, 0.01),
+    (950_000, 1_400_000, 3_500, 0.02),
+    (1_400_000, None, 12_500, 0.03),
+]
