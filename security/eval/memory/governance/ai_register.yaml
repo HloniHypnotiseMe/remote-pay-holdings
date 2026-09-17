@@ -1,0 +1,66 @@
+# C6 Holdings – AI Register (King V Compliance)
+# Required by King V Principle 10: Governance of Technology
+# Board must approve and review quarterly.
+
+version: 1.0
+last_updated: 2026-09-16
+board_approved_by: "Hloni (Group CEO)"
+
+agents:
+  - name: c6_ceo
+    company: C6 Group
+    purpose: "Strategy, decisions, P&L for C6 Group"
+    risk_level: high
+    human_owner: "Group CEO"
+    oversight: "Daily review of decision stream"
+    data_access: ["c6_business_data", "audit_reports"]
+    external_calls: ["ollama", "n8n"]
+    autonomy_level: "supervised"
+    override_mechanism: "kill_switch + manual review"
+
+  - name: c6_auditor
+    company: C6 Group
+    purpose: "Generate AI business audits"
+    risk_level: medium
+    human_owner: "C6 CEO"
+    oversight: "Quality review of 10% of audits"
+    data_access: ["lead_data", "business_data"]
+    external_calls: ["ollama"]
+    autonomy_level: "semi-autonomous"
+    override_mechanism: "pause agent, review output"
+
+  - name: ubernie_scraper
+    company: Ubernie
+    purpose: "Discover SA businesses from public web"
+    risk_level: medium
+    human_owner: "Ubernie CEO"
+    oversight: "Daily review of scraped data quality"
+    data_access: ["public_web"]
+    external_calls: ["browser", "ollama"]
+    autonomy_level: "semi-autonomous"
+    override_mechanism: "rate limit, pause, blacklist sources"
+
+  - name: remotepay_fraud
+    company: RemotePay
+    purpose: "Detect fraudulent transactions"
+    risk_level: high
+    human_owner: "RemotePay CEO"
+    oversight: "Review of all flagged transactions"
+    data_access: ["transaction_stream"]
+    external_calls: ["ollama"]
+    autonomy_level: "supervised"
+    override_mechanism: "human confirms all fraud blocks"
+
+  # ... 54 more agents
+
+governance_committee:
+  - role: "Board AI Committee"
+    members:
+      - "Hloni (Group CEO)"
+      - "AI Digital Twin (advisory)"
+    meets: "Monthly"
+    responsibilities:
+      - "Review AI register"
+      - "Approve new high-risk agents"
+      - "Review incidents"
+      - "Ensure King V compliance"
