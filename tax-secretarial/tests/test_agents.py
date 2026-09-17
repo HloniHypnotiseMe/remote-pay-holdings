@@ -595,6 +595,127 @@ class TestCalendar(unittest.TestCase):
         )
 
 
+    def test_calendar_event_has_evidence(self):
+        calendar = calendar_agent.ComplianceCalendar()
+
+        calendar.add_cipc_annual_return(
+            "C6 Group",
+            date(2026, 9, 10),
+        )
+
+        event = calendar.events[0]
+
+        self.assertEqual(
+            event.evidence,
+            "CALENDAR-CIPC-ANNUAL-RETURN",
+        )
+
+        evidence = event.evidence_item()
+
+        self.assertEqual(
+            evidence.evidence_id,
+            "CALENDAR-CIPC-ANNUAL-RETURN",
+        )
+        self.assertEqual(
+            evidence.source,
+            "ComplianceCalendar",
+        )
+
+    def test_sars_calendar_inherits_agent_evidence(self):
+        calendar = calendar_agent.ComplianceCalendar()
+
+        calendar.add_sars_company(
+            "C6 Group",
+            date(2026, 2, 28),
+            date(2025, 3, 1),
+        )
+
+        self.assertEqual(len(calendar.events), 4)
+
+        events = {
+            event.obligation: event
+            for event in calendar.events
+        }
+
+        self.assertEqual(
+            events["ITR14"].evidence,
+            "SARS-ITR14-DUE-DATE",
+        )
+
+        for obligation in ("P1", "P2", "P3"):
+            self.assertEqual(
+                events[obligation].evidence,
+                "SARS-PROVISIONAL-DATES",
+            )
+
+        self.assertTrue(
+            all(
+                event.notes
+                == "Preparation only; no SARS submission performed."
+                for event in calendar.events
+            )
+        )
+
+    def test_overdue_excludes_closed_and_not_applicable(self):
+        calendar = calendar_agent.ComplianceCalendar()
+
+        calendar.add_cipc_annual_return(
+            "Overdue",
+            date(2026, 8, 1),
+        )
+
+        calendar.add_cipc_annual_return(
+            "Closed",
+            date(2026, 8, 1),
+        )
+        calendar.events[-1].status = "CLOSED"
+
+        calendar.add_paia_reporting(
+            "Not Applicable",
+            False,
+        )
+
+        overdue = calendar.overdue(
+            date(2026, 9, 1),
+        )
+
+        self.assertEqual(
+            len(overdue),
+            1,
+        )
+        self.assertEqual(
+            overdue[0].entity,
+            "Overdue",
+        )
+
+    def test_due_soon_returns_future_window(self):
+        calendar = calendar_agent.ComplianceCalendar()
+
+        calendar.add_cipc_annual_return(
+            "Soon",
+            date(2026, 9, 10),
+        )
+
+        calendar.add_cipc_annual_return(
+            "Later",
+            date(2026, 12, 10),
+        )
+
+        events = calendar.due_soon(
+            date(2026, 9, 1),
+            days=30,
+        )
+
+        self.assertEqual(
+            len(events),
+            1,
+        )
+        self.assertEqual(
+            events[0].entity,
+            "Soon",
+        )
+
+
 if __name__ == "__main__":
     unittest.main(
         verbosity=2
@@ -613,6 +734,60 @@ class TestTaxDirectorSBCEligibility(unittest.TestCase):
         self.assertIsNone(result.eligible)
         self.assertEqual(result.status, "REVIEW_REQUIRED")
         self.assertIn("all_shareholders_natural_persons", result.missing_data)
+
+    def test_sbc_explicit_disqualifier_blocks(self):
+        result = tax_director.TaxDirector().evaluate_sbc_eligibility(
+            gross_income=1_000_000,
+            all_shareholders_natural_persons=False,
+            personal_service_company=False,
+            holding_company=False,
+        )
+
+        self.assertFalse(result.eligible)
+        self.assertEqual(result.status, "BLOCKED")
+
+    def test_sbc_ready_when_all_facts_support_eligibility(self):
+        result = tax_director.TaxDirector().evaluate_sbc_eligibility(
+            gross_income=1_000_000,
+            all_shareholders_natural_persons=True,
+            personal_service_company=False,
+            holding_company=False,
+        )
+
+        self.assertTrue(result.eligible)
+        self.assertEqual(result.status, "READY")
+
+    def test_sbc_review_does_not_calculate_tax_without_eligibility(self):
+        result = tax_director.TaxDirector().review_entity(
+            "Test Entity",
+            tax_regime="sbc",
+            taxable_income=500_000,
+            gross_income=1_000_000,
+            all_shareholders_natural_persons=None,
+            personal_service_company=None,
+            holding_company=None,
+        )
+
+        self.assertEqual(result.status, "REVIEW_REQUIRED")
+        self.assertIsNone(result.estimated_tax)
+
+
+class TestTaxDirectorSBCEligibility(unittest.TestCase):
+
+    def test_sbc_requires_actual_eligibility_facts(self):
+        result = tax_director.TaxDirector().evaluate_sbc_eligibility(
+            gross_income=1_000_000,
+            all_shareholders_natural_persons=None,
+            personal_service_company=None,
+            holding_company=None,
+        )
+
+        self.assertIsNone(result.eligible)
+        self.assertEqual(result.status, "REVIEW_REQUIRED")
+        self.assertIn(
+            "all_shareholders_natural_persons",
+            result.missing_data,
+        )
 
     def test_sbc_explicit_disqualifier_blocks(self):
         result = tax_director.TaxDirector().evaluate_sbc_eligibility(
