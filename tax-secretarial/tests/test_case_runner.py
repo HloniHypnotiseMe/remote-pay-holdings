@@ -122,6 +122,66 @@ class TestCaseRunner(unittest.TestCase):
                 {"CIPCComplianceAgent": FakeCIPC()},
             )
 
+    def test_agent_exception_isolated_as_review_required(self):
+        class BrokenAgent:
+            def check(self, entity):
+                raise RuntimeError("upstream unavailable")
+
+        result = run_case(
+            "ABC Pty Ltd",
+            [
+                AgentCall(
+                    agent="BrokenAgent",
+                    method="check",
+                    args=("ABC Pty Ltd",),
+                ),
+                AgentCall(
+                    agent="CIPCComplianceAgent",
+                    method="annual_return_review",
+                    args=("ABC Pty Ltd",),
+                ),
+            ],
+            {
+                "BrokenAgent": BrokenAgent(),
+                "CIPCComplianceAgent": FakeCIPC(),
+            },
+        )
+
+        self.assertEqual(len(result.results), 2)
+        self.assertTrue(result.review_required)
+        self.assertEqual(
+            result.results[0].result.status,
+            "REVIEW_REQUIRED",
+        )
+        self.assertIn(
+            "RuntimeError: upstream unavailable",
+            result.results[0].result.warnings,
+        )
+        self.assertEqual(
+            result.results[1].result.status,
+            "READY",
+        )
+
+    def test_empty_entity_is_rejected(self):
+        with self.assertRaises(ValueError):
+            run_case("", [], {})
+
+    def test_missing_agent_name_is_rejected(self):
+        with self.assertRaises(ValueError):
+            run_case(
+                "ABC Pty Ltd",
+                [AgentCall(agent="", method="check")],
+                {},
+            )
+
+    def test_missing_method_name_is_rejected(self):
+        with self.assertRaises(ValueError):
+            run_case(
+                "ABC Pty Ltd",
+                [AgentCall(agent="CIPCComplianceAgent", method="")],
+                {"CIPCComplianceAgent": FakeCIPC()},
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
