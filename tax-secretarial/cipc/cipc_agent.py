@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from datetime import date, timedelta
 from typing import Iterable, Optional
+from core.contracts import EvidenceItem
 
 
 def add_business_days(
@@ -42,6 +43,7 @@ def add_business_days(
 
 
 class CIPCComplianceAgent:
+    agent_name = "cipc_compliance_agent"
 
     ANNUAL_RETURN_FEES = (
         (1_000_000, 100, 150),
@@ -127,6 +129,23 @@ class CIPCComplianceAgent:
             checks.values()
         )
 
+        evidence = [
+            EvidenceItem(
+                evidence_id=f"CIPC-CHECK-{name.upper()}",
+                source="CIPCComplianceAgent",
+                claim=(
+                    f"CIPC readiness check '{name}' "
+                    f"supplied as {value}."
+                ),
+                status="SUPPLIED",
+                notes=(
+                    "Readiness evidence only; no CIPC filing "
+                    "or submission performed."
+                ),
+            )
+            for name, value in checks.items()
+        ]
+
         return {
             "checks": checks,
             "filing_ready": ready,
@@ -135,20 +154,45 @@ class CIPCComplianceAgent:
                 if ready
                 else "REVIEW_REQUIRED"
             ),
+            "evidence": [
+                item.to_dict()
+                for item in evidence
+            ],
         }
 
     def director_change_checklist(
         self,
     ) -> dict:
 
-        return {
+        checklist = {
             "board_resolution_or_authorising_document": False,
             "identity_and_supporting_documents": False,
             "director_consent_or_required_support": False,
             "company_register_updated": False,
             "cipc_submission_completed": False,
             "proof_or_reference_captured": False,
+        }
+
+        evidence = EvidenceItem(
+            evidence_id="CIPC-DIRECTOR-CHANGE",
+            source="CIPCComplianceAgent",
+            claim=(
+                "Director-change checklist prepared with all "
+                "required completion gates initially unverified."
+            ),
+            status="REVIEW_REQUIRED",
+            notes=(
+                "No CIPC submission is claimed and no filing "
+                "completion is inferred."
+            ),
+        )
+
+        return {
+            **checklist,
             "status": "REVIEW_REQUIRED",
+            "evidence": [
+                evidence.to_dict()
+            ],
         }
 
     def annual_return_review(
@@ -170,6 +214,33 @@ class CIPCComplianceAgent:
             )
         )
 
+        evidence = [
+            EvidenceItem(
+                evidence_id="CIPC-ANNUAL-RETURN-DUE-DATE",
+                source="CIPCComplianceAgent",
+                claim=(
+                    "Annual return review due date calculated "
+                    "from the incorporation anniversary."
+                ),
+                status="CALCULATED",
+                notes=(
+                    "Preparation only; no CIPC filing performed."
+                ),
+            ),
+            EvidenceItem(
+                evidence_id="CIPC-ANNUAL-RETURN-FEES",
+                source="CIPCComplianceAgent",
+                claim=(
+                    "Estimated on-time and late annual-return "
+                    "fees calculated from supplied turnover/revenue."
+                ),
+                status="CALCULATED",
+                notes=(
+                    "Fee estimate only; no payment or filing performed."
+                ),
+            ),
+        ]
+
         return {
             "obligation": "CIPC Annual Return",
             "due_date":
@@ -187,4 +258,8 @@ class CIPCComplianceAgent:
                 ),
             "readiness": readiness,
             "filing_claimed": False,
+            "evidence": [
+                item.to_dict()
+                for item in evidence
+            ],
         }

@@ -336,6 +336,51 @@ class TestCIPC(unittest.TestCase):
             result["filing_ready"]
         )
 
+    def test_evidence_contract(self):
+        result = self.agent.beneficial_ownership_check(
+            True,
+            True,
+            True,
+            True,
+        )
+
+        self.assertIn("evidence", result)
+        self.assertEqual(len(result["evidence"]), 4)
+        self.assertTrue(
+            all(
+                item["source"] == "CIPCComplianceAgent"
+                for item in result["evidence"]
+            )
+        )
+
+    def test_director_change_has_evidence(self):
+        result = self.agent.director_change_checklist()
+
+        self.assertIn("evidence", result)
+        self.assertEqual(len(result["evidence"]), 1)
+        self.assertEqual(
+            result["evidence"][0]["evidence_id"],
+            "CIPC-DIRECTOR-CHANGE",
+        )
+        self.assertEqual(
+            result["status"],
+            "REVIEW_REQUIRED",
+        )
+
+    def test_annual_return_review_has_evidence(self):
+        result = self.agent.annual_return_review(
+            date(2026, 7, 30),
+            500_000,
+            True,
+            True,
+            True,
+            True,
+        )
+
+        self.assertIn("evidence", result)
+        self.assertEqual(len(result["evidence"]), 2)
+        self.assertFalse(result["filing_claimed"])
+
     def test_incomplete_filing_gate(self):
 
         result = (
