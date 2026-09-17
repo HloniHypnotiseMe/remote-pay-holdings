@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from datetime import date, timedelta
 from typing import Iterable, Optional
+from core.contracts import EvidenceItem
 
 
 def add_months(
@@ -106,6 +107,7 @@ def previous_business_day(
 
 
 class SARSFilingAgent:
+    agent_name = "sars_filing_agent"
 
     def __init__(
         self,
@@ -248,6 +250,33 @@ class SARSFilingAgent:
             )
         )
 
+        evidence = [
+            EvidenceItem(
+                evidence_id="SARS-ITR14-DUE-DATE",
+                source="SARSFilingAgent",
+                claim=(
+                    "ITR14 preparation due date calculated "
+                    "from the supplied financial year end."
+                ),
+                status="CALCULATED",
+                notes=(
+                    "Preparation only; no SARS submission performed."
+                ),
+            ),
+            EvidenceItem(
+                evidence_id="SARS-PROVISIONAL-DATES",
+                source="SARSFilingAgent",
+                claim=(
+                    "P1, P2 and P3 provisional tax dates calculated "
+                    "from the supplied financial year dates."
+                ),
+                status="CALCULATED",
+                notes=(
+                    "Preparation only; no SARS submission performed."
+                ),
+            ),
+        ]
+
         return {
             "status": "PREPARATION_ONLY",
             "financial_year_start":
@@ -265,6 +294,10 @@ class SARSFilingAgent:
             "P3":
                 provisional["P3"].isoformat(),
             "submission_claimed": False,
+            "evidence": [
+                item.to_dict()
+                for item in evidence
+            ],
         }
 
     def prepare_emp201(
@@ -272,6 +305,19 @@ class SARSFilingAgent:
         payroll_month: date,
         paye_registered: bool,
     ) -> dict:
+
+        evidence = EvidenceItem(
+            evidence_id="SARS-EMP201",
+            source="SARSFilingAgent",
+            claim=(
+                "EMP201 applicability and preparation due date "
+                "derived from PAYE registration status."
+            ),
+            status="CALCULATED",
+            notes=(
+                "Preparation only; no SARS submission performed."
+            ),
+        )
 
         return {
             "obligation": "EMP201",
@@ -287,6 +333,9 @@ class SARSFilingAgent:
             ),
             "status": "PREPARATION_ONLY",
             "submission_claimed": False,
+            "evidence": [
+                evidence.to_dict()
+            ],
         }
 
     def prepare_vat201(
@@ -295,6 +344,19 @@ class SARSFilingAgent:
         vat_registered: bool,
         electronic: bool = True,
     ) -> dict:
+
+        evidence = EvidenceItem(
+            evidence_id="SARS-VAT201",
+            source="SARSFilingAgent",
+            claim=(
+                "VAT201 applicability and preparation due date "
+                "derived from VAT registration status and filing mode."
+            ),
+            status="CALCULATED",
+            notes=(
+                "Preparation only; no SARS submission performed."
+            ),
+        )
 
         return {
             "obligation": "VAT201",
@@ -312,4 +374,7 @@ class SARSFilingAgent:
             "electronic": electronic,
             "status": "PREPARATION_ONLY",
             "submission_claimed": False,
+            "evidence": [
+                evidence.to_dict()
+            ],
         }

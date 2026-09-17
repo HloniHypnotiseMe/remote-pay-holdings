@@ -220,6 +220,57 @@ class TestSARS(unittest.TestCase):
             date(2026, 9, 30),
         )
 
+    def test_company_schedule_contains_evidence(self):
+        result = self.agent.prepare_company_schedule(
+            date(2026, 3, 1),
+            date(2027, 2, 28),
+        )
+
+        self.assertIn("evidence", result)
+        self.assertGreaterEqual(len(result["evidence"]), 2)
+        self.assertTrue(
+            all(
+                item["source"] == "SARSFilingAgent"
+                for item in result["evidence"]
+            )
+        )
+        self.assertTrue(
+            all(
+                item["status"] == "CALCULATED"
+                for item in result["evidence"]
+            )
+        )
+
+    def test_emp201_contains_evidence(self):
+        result = self.agent.prepare_emp201(
+            date(2026, 8, 1),
+            True,
+        )
+
+        self.assertEqual(
+            result["evidence"][0]["evidence_id"],
+            "SARS-EMP201",
+        )
+        self.assertEqual(
+            result["evidence"][0]["status"],
+            "CALCULATED",
+        )
+
+    def test_vat201_contains_evidence(self):
+        result = self.agent.prepare_vat201(
+            date(2026, 8, 1),
+            True,
+        )
+
+        self.assertEqual(
+            result["evidence"][0]["evidence_id"],
+            "SARS-VAT201",
+        )
+        self.assertEqual(
+            result["evidence"][0]["status"],
+            "CALCULATED",
+        )
+
     def test_no_submission_claim(self):
 
         result = (
