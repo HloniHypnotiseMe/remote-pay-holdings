@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C6 Holdings – Operations Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-slate-900 text-white min-h-screen">
+    <header class="bg-slate-800 border-b border-slate-700 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold">RemotePay Fintech Services</h1>
+                <p class="text-sm text-slate-400">Group Operations Dashboard</p>
+            </div>
+            <div class="flex gap-4">
+                <button id="startBtn" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-semibold">
+                    ▶ Start All CEOs
+                </button>
+                <button id="stopBtn" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg font-semibold">
+                    ⏹ Emergency Stop
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-6 space-y-6">
+        <!-- Group Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                <p class="text-slate-400 text-sm">Total Revenue</p>
+                <p class="text-3xl font-bold text-green-400">R0</p>
+                <p class="text-xs text-slate-500 mt-1">Last 30 days</p>
+            </div>
+            <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                <p class="text-slate-400 text-sm">Active Customers</p>
+                <p class="text-3xl font-bold">0</p>
+                <p class="text-xs text-slate-500 mt-1">Across all brands</p>
+            </div>
+            <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                <p class="text-slate-400 text-sm">AI Agents Running</p>
+                <p class="text-3xl font-bold text-blue-400">58</p>
+                <p class="text-xs text-slate-500 mt-1">C6 + Ubernie + RemotePay</p>
+            </div>
+            <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                <p class="text-slate-400 text-sm">System Health</p>
+                <p class="text-3xl font-bold text-green-400">100%</p>
+                <p class="text-xs text-slate-500 mt-1">All services up</p>
+            </div>
+        </div>
+
+        <!-- Brand Breakdown -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                <h2 class="text-xl font-bold mb-3">C6 Group</h2>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between"><span class="text-slate-400">CEO Status</span><span class="text-green-400">Running</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">Staff Agents</span><span>18</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">Customers</span><span>0</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">MRR</span><span>R0</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">Last Cycle</span><span>Cycle 7</span></div>
+                </div>
+            </div>
+            <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                <h2 class="text-xl font-bold mb-3">Ubernie</h2>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between"><span class="text-slate-400">CEO Status</span><span class="text-green-400">Running</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">Staff Agents</span><span>17</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">Listings</span><span>0</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">Ad Revenue</span><span>R0</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">Last Scrape</span><span>–</span></div>
+                </div>
+            </div>
+            <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                <h2 class="text-xl font-bold mb-3">RemotePay</h2>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between"><span class="text-slate-400">CEO Status</span><span class="text-green-400">Running</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">Staff Agents</span><span>23</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">Merchants</span><span>0</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">Volume</span><span>R0</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">Fees Earned</span><span>R0</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Decision Stream -->
+        <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+            <h2 class="text-xl font-bold mb-4">CEO Decision Stream</h2>
+            <div id="decisionStream" class="space-y-2 font-mono text-sm">
+                <p class="text-slate-500">Loading decisions...</p>
+            </div>
+        </div>
+
+        <!-- Revenue Chart -->
+        <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+            <h2 class="text-xl font-bold mb-4">Revenue Projection (12 months)</h2>
+            <canvas id="revenueChart" height="80"></canvas>
+        </div>
+
+        <!-- Operations Calendar -->
+        <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+            <h2 class="text-xl font-bold mb-4">Today's Operations</h2>
+            <div class="space-y-2 text-sm">
+                <div class="flex justify-between py-2 border-b border-slate-700"><span>06:00 · Ubernie Scraper</span><span class="text-green-400">✅ Ran</span></div>
+                <div class="flex justify-between py-2 border-b border-slate-700"><span>08:00 · CEO Cycles</span><span class="text-green-400">✅ Ran</span></div>
+                <div class="flex justify-between py-2 border-b border-slate-700"><span>09:00 · Morning Check</span><span class="text-yellow-400">⏳ Pending</span></div>
+                <div class="flex justify-between py-2 border-b border-slate-700"><span>17:00 · End-of-Day</span><span class="text-slate-500">–</span></div>
+                <div class="flex justify-between py-2"><span>02:00 · Backups</span><span class="text-slate-500">–</span></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Revenue projection chart
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['M1','M2','M3','M4','M5','M6','M7','M8','M9','M10','M11','M12'],
+                datasets: [{
+                    label: 'Revenue (R)',
+                    data: [4995, 9990, 24975, 39960, 54945, 74925, 99900, 124875, 149850, 174825, 199800, 224775],
+                    borderColor: 'rgb(74, 222, 128)',
+                    tension: 0.3,
+                    fill: true,
+                    backgroundColor: 'rgba(74, 222, 128, 0.1)'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { labels: { color: '#fff' } } },
+                scales: {
+                    x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
+                    y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }
+                }
+            }
+        });
+
+        // Emergency stop
+        document.getElementById('stopBtn').addEventListener('click', async () => {
+            if (confirm('Activate EMERGENCY STOP? All CEOs will halt.')) {
+                try {
+                    await fetch('http://localhost:8080/api/stop', { method: 'POST' });
+                    alert('Kill switch activated.');
+                } catch (e) {
+                    alert('Error: ' + e.message);
+                }
+            }
+        });
+
+        // Start all
+        document.getElementById('startBtn').addEventListener('click', async () => {
+            try {
+                await fetch('http://localhost:8080/api/start', { method: 'POST' });
+                alert('All CEOs starting...');
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        });
+
+        // Load decision stream
+        async function loadDecisions() {
+            try {
+                const res = await fetch('http://localhost:8080/api/status');
+                const data = await res.json();
+                const stream = document.getElementById('decisionStream');
+                if (data.decisions && data.decisions.length > 0) {
+                    stream.innerHTML = data.decisions.slice(0, 10).map(d =>
+                        `<div class="flex gap-3 py-1 border-b border-slate-700">
+                            <span class="text-slate-500">[${d.time || 'now'}]</span>
+                            <span class="text-slate-300">${(d.decision || '').substring(0, 120)}</span>
+                        </div>`
+                    ).join('');
+                }
+            } catch (e) {
+                console.log('Decision stream not available yet');
+            }
+        }
+        loadDecisions();
+        setInterval(loadDecisions, 30000);
+    </script>
+</body>
+</html>
