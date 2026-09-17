@@ -406,6 +406,79 @@ class TestInternational(unittest.TestCase):
             international.InternationalTaxAnalyst()
         )
 
+    def test_country_screen_has_evidence(self):
+        result = self.agent.screen_country("UK")
+
+        self.assertIn("evidence", result)
+        self.assertEqual(len(result["evidence"]), 1)
+        self.assertEqual(
+            result["evidence"][0]["evidence_id"],
+            "INT-DTA-COUNTRY-SCREEN",
+        )
+
+    def test_withholding_screen_has_evidence(self):
+        result = self.agent.domestic_withholding_screen(
+            "royalties",
+            100_000,
+        )
+
+        self.assertIn("evidence", result)
+        self.assertEqual(len(result["evidence"]), 1)
+        self.assertEqual(
+            result["evidence"][0]["evidence_id"],
+            "INT-WHT-SCREEN",
+        )
+
+    def test_treaty_review_has_evidence(self):
+        result = self.agent.treaty_review(
+            "UK",
+            "royalties",
+        )
+
+        self.assertIn("evidence", result)
+        self.assertEqual(len(result["evidence"]), 1)
+        self.assertFalse(
+            result["treaty_relief_granted"]
+        )
+
+    def test_pe_screen_has_evidence(self):
+        result = self.agent.permanent_establishment_screen(
+            {
+                "fixed_place_of_business": True,
+            }
+        )
+
+        self.assertIn("evidence", result)
+        self.assertEqual(len(result["evidence"]), 1)
+        self.assertEqual(
+            result["evidence"][0]["evidence_id"],
+            "INT-PE-SCREEN",
+        )
+
+    def test_compliance_checklist_has_evidence(self):
+        result = self.agent.compliance_checklist(
+            800_000_000,
+        )
+
+        self.assertIn("evidence", result)
+        self.assertEqual(len(result["evidence"]), 1)
+        self.assertEqual(
+            result["evidence"][0]["evidence_id"],
+            "INT-COMPLIANCE-CHECKLIST",
+        )
+
+    def test_pillar_two_has_evidence(self):
+        result = self.agent.pillar_two_screen(
+            800_000_000,
+        )
+
+        self.assertIn("evidence", result)
+        self.assertEqual(len(result["evidence"]), 1)
+        self.assertEqual(
+            result["evidence"][0]["evidence_id"],
+            "INT-PILLAR-TWO-SCREEN",
+        )
+
     def test_country_alias(self):
 
         result = (
