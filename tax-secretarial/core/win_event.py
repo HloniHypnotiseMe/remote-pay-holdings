@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import os
+import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.request import Request, urlopen
@@ -14,6 +15,7 @@ def emit_win_event(event: dict) -> None:
         "actor": "tax_secretarial",
         "tier": "EXECUTION",
         "recorded_at": datetime.now(timezone.utc).isoformat(),
+        "event_id": f"Tax Secretarial:{uuid.uuid4().hex}",
         **event,
     }
 
