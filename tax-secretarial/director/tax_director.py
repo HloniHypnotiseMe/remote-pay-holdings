@@ -20,6 +20,8 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from core.win_event import emit_win_event
+
 from config.tax_config import (
     SBC_GROSS_INCOME_LIMIT,
     STANDARD_CIT_RATE,
@@ -226,7 +228,7 @@ class TaxDirector:
             "taxable_income explicitly supplied",
         ])
 
-        return ReviewResult(
+        result = ReviewResult(
             entity=entity,
             status="READY_FOR_REVIEW",
             tax_regime=regime,
@@ -241,6 +243,27 @@ class TaxDirector:
             warnings=warnings,
             evidence=evidence,
         )
+
+        emit_win_event({
+            "objective": "Produce an evidence-backed tax review",
+            "minimum_winnable_action": "Complete one entity review with required tax inputs",
+            "proof_required": "READY_FOR_REVIEW result with explicit evidence",
+            "project": "Tax Secretarial",
+            "actor": "tax_director",
+            "tier": "EXECUTION",
+            "evidence": {
+                "event": "tax_review_completed",
+                "entity": entity,
+                "status": result.status,
+                "tax_regime": regime,
+                "estimated_tax": result.estimated_tax,
+                "evidence_count": len(result.evidence),
+            },
+            "capability_unlocked": "Evidence-backed tax review",
+            "next_win": "Complete the next compliance obligation with evidence",
+        })
+
+        return result
 
     def review_file(
         self,
