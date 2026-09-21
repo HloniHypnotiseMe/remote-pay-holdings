@@ -1,24 +1,5 @@
-# Python
+node_modules/
 __pycache__/
-*.py[cod]
-*$py.class
-
-# Virtual environments
+*.pyc
+.env
 .venv/
-venv/
-env/
-ENV/
-
-# Test / coverage
-.pytest_cache/
-.coverage
-htmlcov/
-
-# Local runtime data
-*.log
-
-# OS / editor
-.DS_Store
-Thumbs.db
-.vscode/
-.idea/
