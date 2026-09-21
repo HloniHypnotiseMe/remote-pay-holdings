@@ -51,10 +51,10 @@ class SiteRenderer:
         <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <h1 class="text-2xl font-bold" style="color: var(--primary);">{config['site_name']}</h1>
             <div class="flex gap-6 items-center">
-                <a href="/" class="hover:opacity-70">Home</a>
-                <a href="/menu.html" class="hover:opacity-70">Menu</a>
-                <a href="/about.html" class="hover:opacity-70">About</a>
-                <a href="/contact.html" class="hover:opacity-70">Contact</a>
+                <a href="index.html" class="hover:opacity-70">Home</a>
+                <a href="menu.html" class="hover:opacity-70">Menu</a>
+                <a href="about.html" class="hover:opacity-70">About</a>
+                <a contact.html" class="hover:opacity-70">Contact</a>
                 <button onclick="openCart()" class="btn-primary px-4 py-2 rounded-lg">
                     Cart <span id="cart-count">0</span>
                 </button>
@@ -66,7 +66,7 @@ class SiteRenderer:
         <div class="max-w-4xl mx-auto text-center">
             <h2 class="text-5xl font-bold mb-4">{hero.get('headline', config['site_name'])}</h2>
             <p class="text-xl text-gray-600 mb-8">{hero.get('subheadline', '')}</p>
-            <a href="/menu.html" class="btn-primary px-8 py-4 rounded-lg text-lg font-bold inline-block">
+            <a href="menu.html" class="btn-primary px-8 py-4 rounded-lg text-lg font-bold inline-block">
                 {hero.get('cta', 'Order Now')}
             </a>
         </div>
@@ -137,8 +137,8 @@ class SiteRenderer:
 <body class="bg-gray-50">
     <nav class="bg-white shadow-sm px-4 py-4">
         <div class="max-w-7xl mx-auto flex justify-between">
-            <a href="/" class="text-xl font-bold">{self.site['config']['site_name']}</a>
-            <a href="/" class="text-gray-600">← Back</a>
+            <a href="index.html" class="text-xl font-bold">{self.site['config']['site_name']}</a>
+            <a href="index.html" class="text-gray-600">← Back</a>
         </div>
     </nav>
     <main class="max-w-7xl mx-auto px-4 py-12">
@@ -237,7 +237,7 @@ function renderCart() {
     if (total) total.textContent = 'R' + sum.toFixed(2);
 }
 
-function checkout() { window.location.href = '/checkout.html'; }
+function checkout() { window.location.href = 'checkout.html'; }
 updateCartCount();
 """
         (assets_dir / "cart.js").write_text(cart_js, encoding="utf-8")
