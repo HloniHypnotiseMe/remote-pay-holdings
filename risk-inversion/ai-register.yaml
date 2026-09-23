@@ -1,0 +1,21 @@
+schema_version: "1.0"
+status: EXISTS
+purpose: "Holding-level inventory of AI/agent systems and accountable controls"
+promotion_gate:
+  - EXISTS
+  - WORKS
+  - VERIFIED
+  - LIVE
+required_fields:
+  - agent_id
+  - owner
+  - human_accountable_owner
+  - purpose
+  - capabilities
+  - data_classes
+  - connected_systems
+  - risk_class
+  - control_status
+  - evaluation_status
+  - evidence_ids
+note: "An inventory entry is not proof of deployment, compliance, or legal status."
