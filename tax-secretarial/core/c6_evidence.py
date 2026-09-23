@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import json
 import os
-from dataclasses import asdict
 from typing import Any
 from urllib.request import Request, urlopen
 
@@ -69,7 +68,7 @@ def publish_evidence(
         evidence=evidence,
     )
     request = Request(
-        url.rstrip("/") + "/api/v1/evidence/validate",
+        url.rstrip("/") + "/api/v1/evidence",
         data=json.dumps(payload).encode("utf-8"),
         headers={"Content-Type": "application/json"},
         method="POST",
@@ -77,7 +76,7 @@ def publish_evidence(
     try:
         with urlopen(request, timeout=5) as response:
             accepted = json.loads(response.read().decode("utf-8"))
-        return {"published": True, "status": accepted["status"], "record": accepted}
+        return {            "published": True,            "status": accepted["status"],            "record": accepted,            "evidence_id": accepted["id"],        }
     except Exception as exc:
         return {
             "published": False,
