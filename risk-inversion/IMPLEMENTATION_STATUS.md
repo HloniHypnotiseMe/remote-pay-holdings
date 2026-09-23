@@ -23,6 +23,7 @@ These require deployment/integration evidence and therefore remain GAP/EXISTS un
 - distributed/global kill switch
 - durable append-only audit storage
 - C6 SaaS Core authenticated tenant integration
+- C6 SaaS Core now has a canonical persisted audit-event model/API; deployment migration and authenticated runtime proof remain GAP
 - production golden-set execution and feedback loop
 - production active-memory graph/storage/retrieval wiring
 - live AI Register ingestion from the agent estate
@@ -31,6 +32,10 @@ These require deployment/integration evidence and therefore remain GAP/EXISTS un
 - external legal/regulatory compliance certification
 
 No third-party Akeyless/Saviynt dependency has been introduced.
+
+## Latest platform wiring
+
+C6 SaaS Core now exposes `/api/v1/audit` backed by `audit_events` (migration `002_create_audit_events.sql`). This establishes the platform persistence contract; it is not yet evidence of deployed runtime enforcement.
 
 ## Critical governance boundary
 
