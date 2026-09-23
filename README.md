@@ -8,7 +8,7 @@ Domain agents and contracts remain in this repository. Shared platform capabilit
 
 Current shared integration:
 - Tax Secretarial evidence uses `tax-secretarial/core/c6_evidence.py`.
-- Set `C6_EVIDENCE_API_URL` to the C6 SaaS Core base URL to publish evidence contracts.
+- Set `C6_EVIDENCE_API_URL` to the C6 SaaS Core base URL to persist evidence records through `POST /api/v1/evidence`.
 - If the endpoint is unavailable or not configured, the publisher returns **GAP** rather than claiming verification.
 - Win events remain on the existing C6 Win Engine contract.
 
