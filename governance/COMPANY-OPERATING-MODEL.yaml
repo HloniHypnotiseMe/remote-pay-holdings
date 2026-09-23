@@ -1,0 +1,21 @@
+# Product-specific company operating model
+# Generated from C6-Os/agent-arsenal/governance/C6-COMPANY-OPERATING-MODEL.yaml
+product:
+  id: tax_secretarial
+  name: "C6 Tax & Secretarial"
+  repo: remote-pay-holdings
+  path: tax-secretarial
+  ceo:
+    role: "Tax & Secretarial CEO"
+    agent_id: "tax-secretarial.ceo"
+  departments:
+    tax: {head: "Head of Tax", agents: ["tax-controller", "tax-researcher", "tax-filing-coordinator"]}
+    secretarial: {head: "Head of Company Secretarial", agents: ["company-secretary", "statutory-records-manager"]}
+    governance: {head: "Head of Corporate Governance", agents: ["governance-advisor", "board-pack-manager"]}
+    compliance: {head: "Head of Compliance", agents: ["compliance-auditor", "evidence-controller"]}
+    client_success: {head: "Head of Client Success", agents: ["client-onboarding", "case-manager", "support-manager"]}
+    operations: {head: "Head of Operations", agents: ["workflow-manager", "document-controller"]}
+    technology: {head: "Head of Technology", agents: ["platform-integrator", "qa-engineer"]}
+    risk: {head: "Head of Risk", agents: ["risk-liaison", "inversion-analyst"]}
+  legal_boundary: "Controls and workflows do not constitute legal, tax or regulatory certification unless the relevant qualified authority/person provides it."
+  platform_dependencies: [c6-saas-core, C6-Os, remote-pay-holdings/risk-inversion]
