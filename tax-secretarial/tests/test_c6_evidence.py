@@ -40,3 +40,33 @@ class TestC6Evidence(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+    def test_publisher_targets_persistent_endpoint(self):
+        os.environ["C6_EVIDENCE_API_URL"] = "https://core.example"
+        captured = {}
+
+        class FakeResponse:
+            def __enter__(self):
+                return self
+            def __exit__(self, exc_type, exc, tb):
+                return False
+            def read(self):
+                return b'{"id":"evidence-001","status":"VERIFIED"}'
+
+        def fake_urlopen(request, timeout=5):
+            captured["url"] = request.full_url
+            return FakeResponse()
+
+        with patch("core.c6_evidence.urlopen", fake_urlopen):
+            result = publish_evidence(
+                tenant_id="tenant-1",
+                entity="ABC Pty Ltd",
+                capability="sars_filing",
+                evidence=self.evidence,
+            )
+
+        self.assertTrue(result["published"])
+        self.assertEqual(result["evidence_id"], "evidence-001")
+        self.assertEqual(captured["url"], "https://core.example/api/v1/evidence")
+        os.environ.pop("C6_EVIDENCE_API_URL", None)
