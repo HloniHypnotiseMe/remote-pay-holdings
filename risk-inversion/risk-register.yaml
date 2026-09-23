@@ -1,0 +1,19 @@
+schema_version: "1.0"
+status: EXISTS
+severity_levels: [LOW, MEDIUM, HIGH, CRITICAL]
+required_fields:
+  - risk_id
+  - owner
+  - asset
+  - threat
+  - impact
+  - likelihood
+  - severity
+  - controls
+  - evidence
+  - status
+escalation:
+  CRITICAL: incident_commander_and_human_owner
+  HIGH: risk_director_and_human_owner
+  MEDIUM: control_owner
+  LOW: control_owner
